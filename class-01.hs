@@ -181,22 +181,24 @@ double a = a + a
 
 -- б) Утроение заданного числа
 --    (типовую аннотацию и образцы параметров следует написать самостоятельно)
-triple :: Num a => a -> a -> a
-triple = a + a + a
+triple :: Num a => a -> a
+triple a = 3*a
 
 -- в) Определение наибольшего из трёх заданных целых чисел (можно воспользоваться стандартной
 --    двухаргументной функцией max).
-max3 :: Ord a => a -> a -> a
-max3 = undefined
+max3 :: Ord a => a -> a -> a -> a
+max3 a b c = max a $ max b c
 
 {-
   Проверка:
 > max3 87 34 209
-???
+209
+
 > max3 22 28 30
-???
+22 28 30
+
 > max3 12 25 (-7)
-???
+25
 
 -}
 
@@ -204,19 +206,21 @@ max3 = undefined
 -- (пользоваться стандартными логическими операциями не следует, обратите внимание на
 --  образцы параметров функции, последняя строка -- "во всех остальных случаях").
 bothTrue :: Bool -> Bool -> Bool
-bothTrue True True = undefined
-bothTrue _  _ = undefined
+bothTrue True True = True
+bothTrue _  _ = False
 
 
 -- д) Функция, возвращающая True, если только один из её аргументов равен True,
 -- и False в противном случае (пользоваться стандартными логическими операциями не следует).
 oneTrue :: Bool -> Bool -> Bool
-oneTrue = undefined
+oneTrue True False = True
+oneTrue  False True = True
+oneTrue  _ _ = False
 
 -- е) Дана температура в градусах Фаренгейта. Вычислить соответствующую температуру
 -- в градусах Цельсия.
 f2c :: Double -> Double
-f2c = undefined
+f2c t = (t-32)*(5/9)
 
 {-
    ж) Найти наибольший общий делитель двух целых чисел, пользуясь
@@ -225,12 +229,22 @@ f2c = undefined
       НОД(a, 0) = a.
 -}
 -- gcd' :: ???
-gcd' = undefined
+
+gcd' :: Int->Int->Int
+gcd' a 0 = a
+gcd' a b = gcd' b $ (a `mod` b)
 
 -- з) Функция, возвращающая название дня недели по его номеру (от 1 до 7),
 --    если номер неправильный, генерируется исключение (функция error).
 dayOfWeek :: Int -> String
-dayOfWeek = undefined
+dayOfWeek n
+	|n==1 = "Monday"
+	|n==2 = "Tuesday"
+	|n==3 = "Wednesday"
+	|n==4 = "Thursday"
+	|n==5 = "Friday"
+	|n==6 = "Saturday"
+	|n==7 = "Sunday"
 
 
 -- Далее типовые аннотации, если их нет, следует писать самостоятельно.
@@ -252,12 +266,21 @@ sign a
           4,    если x ≥ 2.
 -}
 
-eval_f = undefined
+eval_f :: Double -> Double
+eval_f x
+	|x<=0 = -x
+	|(x>0) && (x<2) = x*x
+	|x>=2 =4
 
 -- б) Написать функцию, возвращающую текстовую характеристику ("hot", "warm", "cool", "cold")
 -- по заданному значению температуры в градусах Цельсия.
 describeTemperature :: Double -> String
-describeTemperature = undefined
+describeTemperature t
+	|t>30 = "Hot"
+	|t>20 = "Warm"
+	|t>10 = "Cool"
+	| otherwise = "Cold"
+	
 
 {- 
    в) (*) Дан список температур в градусах Фаренгейта. Вывести для каждого значения
@@ -279,7 +302,8 @@ sum_n n
   | otherwise = error "n should be >= 1"
 
 -- а) Вычислить сумму всех целых чисел от a до b включительно.
-sum_ab = undefined
+sum_ab a a = a
+sum_ab a b = sum_ab 
 
 {-
    б) Числовая последовательность определяется следующим образом:

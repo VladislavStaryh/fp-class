@@ -298,37 +298,54 @@ describeTemperature t
 -- Пример. Вычислить сумму всех целых чисел от 1 до n (где n >= 1):
 sum_n 1 = 1
 sum_n n
-  | n > 1 = n + sum_n (n-1)
-  | otherwise = error "n should be >= 1"
+  |n > 1 = n + sum_n (n-1)
+  |otherwise = error "n should be >= 1"
 
 -- а) Вычислить сумму всех целых чисел от a до b включительно.
-sum_ab a a = a
-sum_ab a b = sum_ab 
-
+sum_ab a b 
+	  |a == b = b
+	  |a < b = b + sum_ab a (b-1)
+	  |otherwise = error "Error"
 {-
    б) Числовая последовательность определяется следующим образом:
       a1 = 1, a2 = 2, a3 = 3, a_k = a_{k−1} + a_{k−2} − 2*a_{k−3}, k = 4, 5, ...
       Вычислить её n-й элемент.
 -}
-eval_a_n = undefined
+eval_a_n n
+	|n == 1 = 1
+	|n == 2 = 2
+	|n == 3 = 3
+	|n >= 4 = eval_a_n (n-1) + eval_a_n (n-2) - 2*eval_a_n (n-3)
 
 -- в) Вычислить, пользуясь рекурсией, n-ю степень числа a (n - целое):
-pow = undefined
+pow a 0 = 1
+pow a n = a * pow a (n-1)
 
 -- г) Пользуясь ранее написанной функцией pow, вычислить сумму: 1^k + 2^k + ... + n^k.
-sum_nk = undefined
+sum_nk 1 k = pow 1 k
+sum_nk n k = pow n k + sum_nk (n-1) k
 
 -- д) Сумма факториалов чисел от 1 до n.
 sum_fact 1 = 1
-sum_fact n = undefined
+sum_fact n = fact n + sum_fact (n-1)
   where
-    fact n = undefined
+    fact 1 = 1
+    fact n = n * fact(n-1) 
 
 -- е) Количество цифр целого числа
-number_digits = undefined
+number_digits 0 = 1 
+number_digits x = step x + number_digits(div x 10)
+    where
+      step x
+           |(div x 10>0) = 1
+           |otherwise = 0
 
 -- ж) Проверить, является ли заданное число простым.
-isPrime = undefined
+
+isPrime x = step(x-1)
+	where step y
+		   |y<2=True
+	           |otherwise = not((mod x y==0))&&step(y-1)
 
 -- 8) Разное
 
@@ -340,6 +357,11 @@ isPrime = undefined
   а 1200 и 2000 — являются).
 -}
 
-nDays year = undefined
+nDays year
+	|isLeap year=366
+	|otherwise = 365
   where
-    isLeap = undefined
+    isLeap year
+	     |mod year 4 /= 0 = False
+	     |(mod year 100 == 0)&&(mod year 400 /= 0)=False
+	     |otherwise = True

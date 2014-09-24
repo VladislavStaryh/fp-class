@@ -2,14 +2,17 @@
 -- Написать функцию, которая разбивает промежуток времени в секундах на часы, минуты и секунды.
 -- Результат возвращать в виде кортежа из трёх элементов. Реализовать также обратное преобразование.
 sec2hms :: Int -> (Int, Int, Int)
-sec2hms = undefined
+sec2hms s = (h, m, s `mod` 60)
+	where
+		h = s `div` 3600
+		m = (s `div` 60) `mod` 60
 
 hms2sec :: (Int, Int, Int) -> Int
-hms2sec (h, m, s) = undefined
+hms2sec (h, m, s) = s + m*60 + h*3600
 
 -- Реализовать с помощью hms2sec (здесь параметры заданы по отдельности)
 hms2sec' :: Int -> Int -> Int -> Int
-hms2sec' = undefined
+hms2sec' h m s = s + m*60 + h*3600
 
 -- должно быть True
 test1 = and $ map (\x -> x == hms2sec (sec2hms x)) [1,10..10000]
@@ -22,13 +25,13 @@ test1 = and $ map (\x -> x == hms2sec (sec2hms x)) [1,10..10000]
 type Point = (Double, Double)
 
 distance :: Point -> Point -> Double
-distance (x1, y1) (x2, y2) = undefined
+distance (x1, y1) (x2, y2) = sqrt((x2 - x1)*(x2 - x1)+(y2-y1)*(y2-y1))
 
--- triangle :: ??? -> (Double, Double)
-triangle _ = (p, s)
+triangle :: Point -> Point -> Point -> (Double, Double)
+triangle (x1, y1) (x2,y2) (x3,y3) = (p, s)
   where
-    p = undefined
-    s = undefined
+    p = distance (x1,y1) (x2,y2) + distance (x2,y2) (x3,y3) + distance (x1,y1) (x3,y3)
+    s = sqrt ( p * ( p - distance (x1,y1) (x2,y2) ) * ( p - distance (x2,y2) (x3,y3) ) * ( p - distance (x1,y1) (x3,y3) ) )
 
 -- Во всех следующих заданиях использование стандартных функций обработки списков не допускается.
 -- Все решения должны реализовываться рекурсивными функциями.

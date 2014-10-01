@@ -55,14 +55,43 @@ f11a = map undefined
 a) отфильтровать список так, чтобы в нём остались точки из заданной координатной четверти;
 b) преобразовать декартовы координаты в полярные.
 -}
+
+
+type Point = (Double, Double) 
+
+inFirstQuarter (x,y)
+	| (x>=0)&&(y>=0) = True
+	| otherwise = False
+
+inSecondQuarter (x,y)
+	| (x<=0)&&(y>=0) = True
+	| otherwise = False
+
+inThirdQuarter (x,y)
+	| (x<=0)&&(y<=0) = True
+	| otherwise = False
+
+inFourthQuarter (x,y)
+	| (x<=0)&&(y>=0) = True
+	| otherwise = False
+
+filterByQuarter q
+	|q==1 = filter (inFirstQuarter)
+	|q==2 = filter (inSecondQuarter)
+	|q==3 = filter (inThirdQuarter)
+	|q==4 = filter (inFourthQuarter)
+
+
+
 {-
 1.3 Дан список слов.
 a) Преобразовать все слова к верхнему регистру.
 b) Извлечь из него подсписок слов заданной длины.
 c) Извлечь из него подсписок слов, начинающихся с заданной буквы.
 -}
-f13a :: [String] -> [String]
-f13a = map undefined
+{-f13a :: [String] -> [String]
+f13a = map 
+-}
 
 {-
 2. Формирование числовых последовательностей (iterate).

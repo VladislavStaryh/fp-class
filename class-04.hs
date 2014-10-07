@@ -43,6 +43,22 @@ f1c :: [Double] -> Double
 f1c l = med (foldl (\(sum, count) x -> (sum + x, count + 1)) (0, 0) l)
 	where med (x, y) = x / y
 
+f1d:: Ord a => [a] -> a
+f1d xs = foldl (\min x -> if min > x then x else min) (head xs) xs
+
+f1d_test1 = f1d [1, 2, 3, 4] == 1
+f1d_test2 = f1d [14, 542, 2, 62, 1, 4, 67, 3, 4] == 1
+f1d_test3 = f1d [0] == 0
+
+
+
+f1e::Int -> [Int]-> Int
+f1e a xs 
+    | (even $ head xs) && (fun == head xs)  = a
+    | otherwise = hf
+        where hf = foldl (\min x -> if odd x && min > x then x else min) (head xs) xs
+
+
 
 
 
@@ -71,6 +87,100 @@ f1e :: [Integer] -> Integer
      заданной функции двух аргументов к соответствующим элементам исходных списков.
 -}
 
+f2a :: [a] -> [a]
+f2a l = fst $ foldl (\(xs,a) b -> if even a then (xs++[b],a+1) else (xs,a+1)) ([],1) l
+
+f2a_test1 = f2a [1,2,3,4,5] == [2,4]
+f2a_test2 = f2a [1,2,3,5] == [2,5]
+f2a_test3 = f2a [1] == []
+
+f2b :: (Num a, Ord a) => [a1] -> a -> [a1]
+f2b l n = fst $ foldl (\(xs,a) b -> if a<=n then (xs++[b],a+1) else (xs,a+1)) ([],1) l
+
+f2b_test1 = f2b [1,2,3,4,5] 1 == [1]
+f2b_test2 = f2b [1,2,3,-7,5] 2 == [1, 2]
+f2b_test3 = f2b [1] 3 == [2]
+
+f2c :: (Num a, Ord a) => [a1] -> a -> [a1]
+f2c l n = fst $ foldr (\ b (xs,a)-> if a<=n then (b:xs,a+1) else (xs,a+1)) ([],1) l
+
+f2c_test1 = f2c [1,2,3,4,5] 1 == [5]
+f2c_test2 = f2c [1,2,3,4,5] 1 == [3, 4, 5]
+f2c_test3 = f2c [1] 5 == [1]
+
+f2d :: [Int] -> [Int]
+f2d (x:xs) = snd $ foldl (\(x,res) y -> if (y>x) then (y,res ++ [y]) else (y,res))(x,[])xs
+
+f2d_test1 = f2d [1,2,3,4,5] == [1,2,3,4,5]
+f2d_test2 = f2d[10,2,3,40,4,5] == [3,5]
+f2d_test3 = f2d [1] == []
+
+min_int = minBound::Int
+f2e :: [Int] -> [Int]
+f2e l = fst $ foldl (\(xs,(prev,prevprev)) b -> if b>prev && prev<prevprev then (xs++[prev],(b,prev)) else (xs,(b,prev))) ([],(max_int,min_int)) (l++[max_int])
+
+f2e_test1 = f2e [1,2,-3,4,5] == [1,-3]
+f2e_test2 = f2e [-10,-2,3,7,5] == [-10,5]
+f2e_test3 = f2e [2,7] == [2]
+
+f2f :: [Char] -> [[Char]]
+f2f l = f $ foldr (\a (x:xs) -> if a==' ' then []:x:xs else (a:x):xs) [[]] l
+  where
+    f = foldr (\a xs -> if a=="" then xs else a:xs) [] 
+
+f2f_test1 = f2f "dfsffd, sdfsd,sdfq" == ["dfsffd,", "sdfsd,sdfq"]
+f2f_test2 = f2f "123 456 789 " == ["123", "456", "789"]
+f2f_test3 = f2f " ggg fff,fff ddd  " == ["ggg", "fff,fff","ddd"]
+
+f2g :: (Eq a, Integral a1) => a1 -> [a] -> [[a]]
+f2g k l =foldr (\x z -> if x/=[] then z++[x] else z) [] (fst $ foldl (\((x:xs),n) a -> if (mod n k == 1) || (k==1) then ([a]:x:xs,n+1) else ((x++[a]):xs,n+1)) ([[]],1) l)
+
+f2g_test1 = f2g 3 [1,2,3,4,5,6,7] == [[1,2,3],[4,5,6],[7]]
+f2g_test2 = f2g 7 [1,2,3] == [[1,2,3]]
+f2g_test3 = f2g 1 [1,2,3] == [[1],[2],[3]]
+
+tails l k = l1 : l2
+  where f = foldl (\(res,((z:zs),num)) x -> if (num<=k) then (res,((z:zs),num+1)) else ((z:zs):res,(zs++[x],num+1)) ) ([],(f2b l k,1)) l 
+        l1 = fst $ snd f
+        l2 = fst f
+
+eachK l k = fst $ foldr (\x (xs,n) -> if (mod n k ==1) || k==1 then (xs++[x],n+1) else (xs,n+1)) ([],1) l
+
+f2h list n k 
+  | n-k>0 =  eachK ( tails list n) (n-k)
+  | otherwise = f2g n list 
+
+f2h_test1 = f2h [1,2,3,4,5,6] 3 2 == [[1,2,3],[2,3,4],[3,4,5],[4,5,6]]
+f2h_test2 = f2h [1,2,3] 2 1 == [[1,2],[2,3]]
+f2h_test3 = f2h [1,2,3,4,5,6] 3 0 == [[1,2,3],[4,5,6]]
+
+f2k f l = snd $ foldl (\(flag,xs) x -> if flag && f x then (True,xs++[x]) else (False,xs) ) (True,[]) l
+
+f2k_test1 = f2k even [2,2,6,4,5,6] == [2,2,6,4]
+f2k_test2 = f2k even [1,2,2,6,4,5,6] == []
+f2k_test3 = f2k odd [1,2,3,4,5,6] == [1]
+
+repeatN n x = foldr (\a z -> x:z) [] [1..n] 
+
+f2l n list = foldr (\a zs -> (repeatN n a)++zs) [] list
+
+f2l_test1 = f2l 2 [1,2,3] == [1,1,2,2,3,3]
+f2l_test2 = f2l 0 [1,2,2,6,4,5,6] == []
+f2l_test3 = f2l 4 [5,6] == [5,5,5,5,6,6,6,6]
+
+
+f2m l = fst $ foldl (\(xs,prev) x -> if x/=prev then (xs++[x],x) else (xs,x)) ([],min_int) l
+
+f2m_test1 = f2m [1,1,2,2,3,3] == [1,2,3]
+f2m_test2 = f2m [1,4,4,4,6] == [1,4,6]
+f2m_test3 = f2m [5,6,7] == [5,6,7]
+
+f2n l1 l2 f = fst $ foldl (\(res, (x:xs)) y -> (res++[f x y],xs)) ([],l1) l2
+
+f2n_test1 = f2n [1,1,3] [2,5,-3] (+) == [3,6,0]
+f2n_test2 = f2n [1,1,3] [2,5,-3] (-) == [-1,-4,6]
+f2n_test3 = f2n [1,1,3] [2,5,-3] (*) == [2,5,-9]
+
 {-
  3. Использование свёртки как носителя рекурсии (для запуска свёртки можно использовать список типа [1..n]).
   a) Найти сумму чисел от a до b.
@@ -80,6 +190,32 @@ f1e :: [Integer] -> Integer
      n слагаемых).
   e) Проверить, является ли заданное целое число простым.
 -}
+
+f3a a b = foldl (+) 0 [a..b]
+
+f3a_test1 = f3a 1 5 == 15
+f3a_test2 = f3a 0 100 == 5050
+f3a_test3 = f3a 34 75 == 2289
+
+f3b a b = foldl (+) 0 (scanl (*) hf [a+1..b])
+	 where
+	   hf = foldl (*) 1 [2..a]
+
+
+f3c n = snd $ foldl (\((x, y), res) _ -> ((y, x+y), res ++ [x+y])) ((0, 1), [0,1]) [3..n]
+
+f3c_test1 = f3c 5 == [0, 1, 1, 2, 3]
+f3c_test2 = f3c 2 == [0,1]
+f3c_test3 = f3c 10 == [0,1,1,2,3,5,8,13,21,34]
+
+f3e 0 = False
+f3e 1 = False
+f3e 2 = True
+f3e n = foldl (\res x -> if n `mod` x == 0 then False else res) True [2..n-1]
+
+f3e_test1 = f3e 11 == True
+f3e_test2 = f3e 8 == False
+f3e_test3 = f3e 109998 == False
 
 {-
  4. Решить задачу о поиске пути с максимальной суммой в треугольнике (см. лекцию 3) при условии,

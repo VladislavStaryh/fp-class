@@ -24,6 +24,35 @@
      функции должно быть значение, возвращаемое по умолчанию).
 -}
 
+f1a :: [Integer] -> Integer
+f1a = foldl evenSum 0
+	where evenSum z y
+		| even z = y+z
+		| otherwise = z
+
+
+		
+
+f1b :: [Integer] -> (Integer,Integer)
+f1b = foldl evenSum (0, 1) 
+	where evenSum (s,p) y = (s+y, s*y)
+
+
+
+f1c :: [Double] -> Double
+f1c l = med (foldl (\(sum, count) x -> (sum + x, count + 1)) (0, 0) l)
+	where med (x, y) = x / y
+
+
+
+
+{-
+
+
+f1d :: [Integer] -> Integer
+
+f1e :: [Integer] -> Integer
+-}
 {-
  2. Свёртки, формирующие списки
   a) Сформировать список, содержащий каждый второй элемент исходного.

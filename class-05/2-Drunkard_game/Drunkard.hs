@@ -7,16 +7,18 @@ module Drunkard where
   учитывая, что всего в колоде 52 карты.
 -}
 
-data Suit
+data Suit = Hearts | Diamonds | Spades | Clubs
 
-data Value
+data Value = Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King | Ace
+	deriving(Show,Eq,Ord)
 
 data Card = Card Value Suit
+	deriving(Show,Eq,Ord)
 
 -- 2. Определить функцию, проверяющую, что две переданные ей карты одной масти.
 
 sameSuit :: Card -> Card -> Bool
-sameSuit = undefined
+sameSuit (Card _ s1) (Card _s2) = s1==s2
 
 {-
   3. Определить функцию, проверяющую, что переданная ей первой карта старше второй
@@ -25,7 +27,7 @@ sameSuit = undefined
 -}
 
 beats :: Card -> Card -> Ordering
-c1 `beats` c2 = undefined
+(Card v1 _ ) `beats` (Card v2 _) = compare v1 v2
 
 {-
   4. Определить функцию, которая по паре списков карт возвращает новую пару списков карт
@@ -38,7 +40,9 @@ c1 `beats` c2 = undefined
 -}
 
 game_round :: ([Card], [Card]) -> ([Card], [Card])
-game_round = undefined
+game_round ([], ys) = ([], ys)
+game_round (xs, []) = (xs, [])
+game_round ((x:xs) , (y:ys)) = if (x `beats` y == GT) then ([x] ++ xs ++ [y], ys) else (if (x `beats` y == LT) then (xs, [y] + ys ++ [x]) else game_round ((xs), (ys)))
 
 {-
   5. Определить функцию, которая по паре списков возвращает количество раундов, необходимых
@@ -48,7 +52,14 @@ game_round = undefined
 data Winner = First | Second
 
 game :: ([Card], [Card]) -> (Winner, Int)
-game = undefined
+deriving(Show,Eq)
+	
+game :: ([Card], [Card]) -> (Winner, Int) 	game :: ([Card], [Card]) -> (Winner, Int)
+game (x,y) = game' (x,y) 0
+	 where
+	 game' ([], _) n = (Second, n)
+	 game' (_, []) n = (First, n)
+	 game' (x, y) n = game' (game_round (x, y)) (n+1)
 
 {-
   6. Приведите здесь результаты как минимум пяти запусков функции game (в каждом списке

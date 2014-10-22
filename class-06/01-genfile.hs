@@ -6,7 +6,7 @@
   использовать команду интерпретатора :main, например:
 
      ghci> :main 1000 "Привет, мир" hello.txt
--}
+-} 
 import System.Environment
 
 createFile :: Int -> String -> FilePath -> IO ()

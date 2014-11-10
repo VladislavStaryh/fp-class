@@ -15,12 +15,13 @@ type SensorData = [SensorValue]
    значений, полученных от датчика. -}
 
 getData :: String -> SensorData
-getData = undefined . lines
+getData =  map (\s -> if s == "-" then Nothing else Just (read s)) . lines
 
 {- Напишите функцию, группирующую данные по суткам. -}
 
 dataByDay :: SensorData -> [SensorData]
-dataByDay = undefined
+dataByDay [] = []
+dataByDay (m:t:w:th:f:tail) = [m,t,w,th,f]:(dataByDay tail)
 
 {-
   Посчитайте минимальное значение среди показаний датчика,

@@ -7,7 +7,10 @@ import System.Environment
 -}
 
 reduce :: Integral a => a -> a
-reduce = undefined
+reduce = reduce a
+		| a `mod` 3 == 0 = 0
+		| odd a = a^2
+		| otherwise = a^3
 
 {-
   Напишите функцию, применяющую функцию reduce заданное количество раз к значению в контексте,
@@ -15,7 +18,8 @@ reduce = undefined
 -}
 
 reduceNF :: (Functor f, Integral a) => Int -> f a -> f a
-reduceNF = undefined
+reduceNF 0 a = a
+reduceNF n a = reduceNF (n-1) (fmap reduce a)
 
 {-
   Реализуйте следующие функции-преобразователи произвольным, но, желательно, осмысленным и
@@ -23,13 +27,15 @@ reduceNF = undefined
 -}
 
 toList :: Integral a => [(a, a)]  -> [a]
-toList = undefined
+toList = foldr (\(a,b) t -> (a `mod` b ) : t) []
 
 toMaybe :: Integral a => [(a, a)]  -> Maybe a
-toMaybe = undefined
+toMaybe [] = Nothing
+toMaybe xs = Just (maximum $ toList xs)
 
 toEither :: Integral a => [(a, a)]  -> Either String a
-toEither = undefined
+toEither [] = Left "Null"
+toEither xs = Right (maximum $ toList xs)
 
 -- воспользуйтесь в этой функции случайными числами
 toIO :: Integral a => [(a, a)]  -> IO a
@@ -45,17 +51,24 @@ toIO = undefined
 -}
 
 parseArgs :: [String] -> (FilePath, Int)
-parseArgs = undefined
+parseArgs arg = (head arg, read $ last arg)
 
 readData :: FilePath -> IO [(Int, Int)]
-readData = undefined
+readData fname = do
+		text <- readFile fname
+		return $ foldr (\x acc -> (parse x) : acc) [] $ text
+			where
+				parse x = let l = words x in (read $ head l, read $ last l)
 
 main = do
-  (fname, n) <- parseArgs `fmap` getArgs
-  ps <- readData fname
-  undefined
-  print $ reduceNF n (toEither ps)
-  reduceNF n (toIO ps) >>= print
+	(fname, n) <- parseArgs `fmap` getArgs
+	ps <- readData fname4
+	print $ toList ps
+  	print $ reduceNF n (toList ps)
+	print $ reduceNF n (toMaybe ps)
+  	print $ reduceNF n (toEither ps)
+  	print $ reduceNF n (toEither ps)
+	--reduceNF n (toIO ps) >>= print
 
 {-
   Подготовьте несколько тестовых файлов, демонстрирующих особенности различных контекстов.

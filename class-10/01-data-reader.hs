@@ -9,4 +9,12 @@
    блока do не допускается).
 -}
 
+data Student = Student {name::String, age::Int, group::String}
+	deriving (Eq)
+instance Show Student where
+	show p =  "Name: " ++ name p ++ " Age: " ++ show (age p) ++ " Group: " ++ group p
+
+readStudent str = let (n:a:g:tail) = (words str) in (Student n (read a) g)
+	
+
 main = undefined

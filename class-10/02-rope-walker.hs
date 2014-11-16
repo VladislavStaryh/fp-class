@@ -25,19 +25,24 @@ type Pole = (Birds, Birds)
 
 balance = 3
 
-updatePole :: Pole -> Maybe Pole
-updatePole p = if unbalanced p then Nothing else Just p
+updatePole :: Pole -> Either String Pole
+updatePole p = if unbalancedRight p then Left "Right side unbalanced" else if unbalancedLeft p then Left "Left side unbalanced" else Right p
   where
-    unbalanced (l, r) = abs (l - r) > balance
+	unbalancedRight (l, r) =  r-l > balance
+	unbalancedRight (l, r) =  l-r > balance
 
-landLeft :: Birds -> Pole -> Maybe Pole
+
+landLeft :: Birds -> Pole -> Either String Pole
 landLeft n (left, right) = updatePole (left + n, right)
 
-landRight :: Birds -> Pole -> Maybe Pole
+landRight :: Birds -> Pole -> Either String Pole
 landRight n (left, right) = updatePole (left, right + n)
 
-banana :: Pole -> Maybe Pole
-banana = const Nothing
+banana :: Pole -> Either String Pole
+banana = const (Left "Banana is reason")
+
+unlandAll :: Pole -> Either String Pole
+unlandAll = const (Right (0,0))
 
 tests = all test [1..3]
   where

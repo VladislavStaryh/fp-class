@@ -9,12 +9,29 @@
    блока do не допускается).
 -}
 
+import Control.Monad
+import Data.List
+import Data.Ord
+
 data Student = Student {name::String, age::Int, group::String}
 	deriving (Eq)
-instance Show Student where
-	show p =  "Name: " ++ name p ++ " Age: " ++ show (age p) ++ " Group: " ++ group p
 
-readStudent str = let (n:a:g:tail) = (words str) in (Student n (read a) g)
+instance Show Student where
+	show (Student n a g) =  n ++ " " ++ show a ++ " " ++ g ++ "\n"
+
+
+readStudent str = let [n,a,g] = (words str) in (Student n (read a) g)
+
+groupForStudent :: [String] -> [String]
+groupForStudent [] = []
+groupForStudent xs = [unwords $ take 3 xs] ++ (groupForStudent $ drop 3 xs)
+
+studentsFromFile :: FilePath -> IO [Student]
+studentsFromFile f = readFile f >>= (return . (foldr (\x acc -> readStudent x : acc) []) . groupForStudent . lines)
+
+studentsToFile :: FilePath -> [Student] -> IO ()
+studentsToFile f students = writeFile f $ unlines $ map show students
 	
 
-main = undefined
+
+main = (++) `liftM` studentsFromFile "students-in.txt" `ap` studentsFromFile "students-in2.txt" >>= studentsToFile "students-out.txt" . sortBy (comparing name)

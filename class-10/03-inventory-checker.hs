@@ -18,13 +18,17 @@ data ArmorItem = ArmorItem ArmorKind ArmorType
 data ArmorKit = ArmorKit ArmorKind [ArmorType]
    deriving (Show, Eq)
 
+readArmorItem str = let [k,t] = (words str) in (ArmorItem (read k) (read t))
+
 loadInventory :: FilePath -> IO [ArmorItem]
-loadInventory = undefined
+loadInventory f = (readFile f) >>= return . map readArmorItem . lines
 
 buildArmorKit :: ArmorKind -> [ArmorItem] -> Maybe ArmorKit
-buildArmorKit = undefined
+buildArmorKit k i = if length typeList == 5 then Just (ArmorKit k typeList) else Nothing
+		 	where
+				typeList = (nub $ map (\(ArmorItem _ t) -> t) $ filter (\(ArmorItem ki _) -> ki == k) i)
 
 buildKits :: [ArmorItem] -> Maybe [ArmorKit]
 buildKits = undefined
 
-main = (head `liftM` getArgs) >>= loadInventory >>= undefined >>= print
+--main = (head `liftM` getArgs) >>= loadInventory >>= undefined >>= print

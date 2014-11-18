@@ -25,34 +25,44 @@ type Pole = (Birds, Birds)
 
 balance = 3
 
-updatePole :: Pole -> Either String Pole
-updatePole p = if unbalancedRight p then Left "Right side unbalanced" else if unbalancedLeft p then Left "Left side unbalanced" else Right p
+updatePole :: Pole -> Either Pole String
+updatePole p = if unbalancedRight p then Right "Right side unbalanced" else if unbalancedLeft p then Right "Left side unbalanced" else Left p
   where
 	unbalancedRight (l, r) =  r-l > balance
 	unbalancedLeft (l, r) =  l-r > balance
 
 
-landLeft :: Birds -> Pole -> Either String Pole
+landLeft :: Birds -> Pole -> Either Pole String
 landLeft n (left, right) = updatePole (left + n, right)
 
-landRight :: Birds -> Pole -> Either String Pole
+landRight :: Birds -> Pole -> Either Pole String
 landRight n (left, right) = updatePole (left, right + n)
 
-landBalanced :: Birds -> Pole -> Either String Pole
+landBalanced :: Birds -> Pole -> Either Pole String
 landBalanced n (left, right) = updatePole (left+n, right + n)
 
-banana :: Pole -> Either String Pole
-banana = const (Left "Banana is reason")
+banana :: Pole -> Either Pole String
+banana _ = Right "Banana is reason"
 
-unlandAll :: Pole -> Either String Pole
-unlandAll = const (Right (0,0))
+unlandAll :: Pole -> Either Pole String
+unlandAll _ = Left (0,0)
 
-actionByString :: Pole -> String -> Either String Pole
-actionByString  p "B" = banana p
-actionByString  p "UA" = unlandAll p
-actionByString p str = let (s , n) = (head str, read $ drop 2 str :: Birds) in
+actionByString :: Either Pole String -> String -> Either Pole String
+actionByString (Right s) _ = Right s
+actionByString (Left p) "B" = banana p
+actionByString (Left p) "U" = unlandAll p
+actionByString (Left p) str = let (s , n) = (head str, read $ drop 2 str :: Birds) in
 		if s == 'R' then landRight n p else
 		if s == 'B' then landBalanced n p else landLeft n p
+
+
+severalActionsByListString :: [String] -> Either Pole String
+severalActionsByListString [] = (Left (0,0))
+severalActionsByListString (x:xs) = actionByString (severalActionsByListString xs) x
+
+actionsFromFile f = readFile f >>= (return . severalActionsByListString . lines)
+
+-- foldr actionByString (Left (0,0)) (lines str) 
 
 --tests = all test [1..3]
   --where

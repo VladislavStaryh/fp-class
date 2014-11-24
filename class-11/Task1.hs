@@ -1,35 +1,48 @@
 import Control.Monad
+import Control.Monad.Reader
 import Data.List
 import Data.Ord
 
+data Action = Sumand | Multipling | Division
+	deriving (Show)
 
-type Action = ((Int->Int->Int),Int)
-type ModifyAction = (Int->Int)
+data Operation = Operation Action Int
+	deriving (Show)
 
-modifyAction a = (fst a) (snd a) 
+summand :: Integer -> Reader Integer Integer 	
+summand x = do 	
+	n <- ask 	
+	return (x + n)
 
-
-readAction :: String -> Action
-readAction str = let [t,r,v] = (words str) in ((oper t), (read v))
-			where oper t = if (t == "summand") then (+) else 
-				       		if (t == "multiplier") then (*) else
-				       			if (t == "divisor") then (div) else error "Operation undefined"
-
-actionsFromFile f = readFile f >>= (return . map readAction . lines)
-
-
-numFromFile :: FilePath -> IO [Int]
-numFromFile f = readFile f >>= (return . (map read) . words)
-
-
-
---reformNumList [x:nL] aL = foldl (>>=) x (fst $ aL)   
-
-reformNumFile f1 f2 = let actionsList = actionsFromFile f2
-			  numList = numFromFile f1 
-				in reformNumList numList actionsList
-
-
-
+multipling :: Integer -> Reader Integer Integer 	
+multipling x = do 	
+	n <- ask 	
+	return (x * n)
 					
+division :: Integer -> Reader Integer Integer 	
+division x = do 	
+	n <- ask 	
+	return (x * n)
+
+
+operationFromString::String->Operation
+operationFromString s 
+	|t=="summand" = Operation Sumand $ read n
+	|t=="multiplier" = Operation Sumand $ read n
+	|t=="divisor" = Operation Sumand $ read n
+	where [t,ch,n] = (words s) 
+
+applyOperation:: Operation->Int->Int
+applyOperation (Operation Sumand y) x = x + y
+applyOperation (Operation Multipling y) x = x * y
+applyOperation (Operation Division y) x = div x y
+
+
+
+appyOperations x = do
+	op <- ask
+	return $ foldr applyOperation op x
+
+operationsFromFile f = readFile f >>= (return . map operationFromString . lines)
+
 					
